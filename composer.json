@@ -1,5 +1,5 @@
 {
-    "name": "Cronario?Messenger",
+    "name": "cronario/messenger",
     "description": "Send Message like a Boss",
     "keywords": [
       "Cronario",
@@ -9,33 +9,20 @@
       "Async", "Sync",
       "Sms", "Hipchat", "Curl", "Whatsapp", "Mail"
     ],
-    "homepage": "https://stash.interkassa.com/projects/IK/repos/messenger/browse",
+    "homepage": "http://cronar.io",
     "license": "MIT",
     "authors": [
         {
-            "name": "Gryaznov Vladislav",
-            "email": "v.gryaznov@interkassa.com",
-            "homepage": "https://interkassa.com",
-            "role": "Developer"
+          "name": "Gryaznov Vladislav",
+          "email": "v.gryaznov@interkassa.com",
+          "homepage": "https://interkassa.com",
+          "role": "Developer"
         }
     ],
     "require": {
         "php" : ">=5.5.0",
-        "cronario": "dev-master"
-    },
-
-    "repositories": [
-    {
-        "type": "package",
-        "package": {
-            "name": "cronario",
-            "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://v.gryaznov@stash.interkassa.com/scm/ik/cronario.git",
-                "reference": "master"
-          }
-        }
+        "cronario/cronario" : "0.1.*",
+        "hipchat/hipchat-php": ">=1.0.0"
     },
     "require-dev": {
         "phpunit/phpunit" : "4.*"
@@ -55,7 +42,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.0.1"
+            "dev-master": "0.1.0-dev"
         }
     }
 }
