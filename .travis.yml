@@ -1,25 +1,26 @@
-language: php
+sudo: true
 
+language: php
 php:
-  - 5.4
   - 5.5
   - 5.6
-  - 7.0
-  - hhvm
 
-matrix:
-  allow_failures:
-    - php: 7.0
-  include:
-    - php: 5.4
-      env: 'COMPOSER_FLAGS="--prefer-stable --prefer-lowest"'
+install:
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - composer install
+
+services:
+    - mongodb
+    - redis-server
+
+after_success:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
 
 before_script:
-  - travis_retry composer self-update
-  - travis_retry composer update ${COMPOSER_FLAGS} --no-interaction --prefer-source
+  - pecl install pthreads
 
-script:
-  - phpunit --coverage-text --coverage-clover=coverage.clover
-
-after_script:
-  - if [[ $TRAVIS_PHP_VERSION != 'hhvm' && $TRAVIS_PHP_VERSION != '7.0' ]]; then php vendor/bin/ocular code-coverage:upload --format=php-clover coverage.clover; fi
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
