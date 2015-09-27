@@ -27,9 +27,6 @@ after_script:
       php ocular.phar code-coverage:upload --format=php-clover coverage.clover
     fi
 
-before_script:
-  - if [ $TRAVIS_PHP_VERSION = '7.0' ]; then pecl install pthreads; else pecl install pthreads-2.0.10; fi
-
 cache:
   directories:
     - vendor
