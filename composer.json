@@ -31,9 +31,9 @@
   "require": {
     "php": ">=5.5.0",
     "cronario/cronario": "0.1.*",
+    "cronario/messenger-alphasms": "0.1.9",
     "hipchat/hipchat-php": ">=1.0.0",
     "svyatov/curlwrapper": "~1.3",
-    "alphasms": "1.0.0",
     "zf1/zend-mail": "~1.12"
   },
   "require-dev": {
@@ -42,8 +42,7 @@
   "autoload": {
     "psr-4": {
       "Messenger\\": "src"
-    },
-    "classmap": ["vendor/alphasms/"]
+    }
   },
   "autoload-dev": {
     "psr-4": {
@@ -51,27 +50,11 @@
     }
   },
   "scripts": {
-    "test": "phpunit",
-    "pre-autoload-dump": [
-      "php -r \"@rename('vendor/alphasms/smsclient.class.php', 'vendor/alphasms/SMSClient.php');\""
-    ]
+    "test": "phpunit"
   },
   "extra": {
     "branch-alias": {
       "dev-master": "0.1.*-dev"
     }
-  },
-  "repositories": [
-    {
-      "type": "package",
-      "package": {
-        "name": "alphasms",
-        "version": "1.0.0",
-        "dist": {
-          "type": "zip",
-          "url": "https://alphasms.ua/storage/files/alphasms-client-api.zip"
-        }
-      }
-    }
-  ]
+  }
 }

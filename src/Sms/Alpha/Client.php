@@ -3,7 +3,7 @@
 namespace Messenger\Sms\Alpha;
 
 
-class Client extends \SMSClient
+class Client extends \AlphaSMS\Client
 {
 
 }
