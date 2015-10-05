@@ -24,7 +24,6 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
             'Messenger\\Hipchat\\ResultException'  => 6,
         ]);
 
-        // adds defaul producer to facade
         Facade::addProducer(new Producer([
             Producer::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
         ]));
