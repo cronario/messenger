@@ -83,4 +83,45 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('info', $resultArray['data']);
     }
 
+
+
+    public function testDoJobFailExpectContent()
+    {
+
+        $curl = new \Messenger\Curl\Job([
+            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
+        ]);
+
+        $curl->setUrl('https://google.com');
+        $curl->setMethod('get');
+        $curl->setExpectContent('abra-cadabra ...');
+        $curl->setSync(true);
+
+        $result = $curl();
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
+    public function testDoJobSucces()
+    {
+
+        $curl = new \Messenger\Curl\Job([
+            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
+        ]);
+
+        $curl->setUrl('https://google.com');
+        $curl->setMethod('get');
+        $curl->setSync(true);
+
+        $result = $curl();
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
 }
