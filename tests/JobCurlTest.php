@@ -1,12 +1,9 @@
 <?php
 
-
 namespace Messenger\Test;
-
 
 use \Cronario\Facade;
 use \Cronario\Producer;
-
 
 class JobCurlTest extends \PHPUnit_Framework_TestCase
 {
@@ -40,20 +37,20 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
             \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
         ]);
 
-        $curl->setUrl('http:://example.com');
+        $curl->setUrl('https:://google.com');
         $curl->setMethod('get');
         $curl->setExpectCode(200);
-        $curl->setExpectContent('example');
+        $curl->setExpectContent('google');
         $curl->setSaveContent(true);
         $curl->setSaveInfo(true);
 
         $this->assertInstanceOf('\\Messenger\\Curl\\Job', $curl);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $curl);
 
-        $this->assertEquals('http:://example.com', $curl->getUrl());
+        $this->assertEquals('https:://google.com', $curl->getUrl());
         $this->assertEquals('get', $curl->getMethod());
         $this->assertEquals(200, $curl->getExpectCode());
-        $this->assertEquals('example', $curl->getExpectContent());
+        $this->assertEquals('google', $curl->getExpectContent());
         $this->assertTrue($curl->getSaveContent());
         $this->assertTrue($curl->getSaveInfo());
 
@@ -62,7 +59,28 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
 
     public function testDoJob()
     {
-        $this->assertTrue(!!true);
+
+        $curl = new \Messenger\Curl\Job([
+            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
+        ]);
+
+        $curl->setUrl('https://google.com');
+        $curl->setMethod('get');
+        $curl->setExpectCode(200);
+        $curl->setExpectContent('google');
+        $curl->setSaveContent(true);
+        $curl->setSaveInfo(true);
+        $curl->setSync(true);
+
+        $result = $curl();
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+        $this->assertArrayHasKey('data', $resultArray);
+        $this->assertArrayHasKey('content', $resultArray['data']);
+        $this->assertArrayHasKey('info', $resultArray['data']);
     }
 
 }
