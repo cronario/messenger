@@ -13,7 +13,15 @@ class Job extends AbstractJob
     const P_PARAM_FROM = 'from';
     const P_PARAM_MSG = 'msg';
     const P_PARAM_COLOUR = 'colour'; // yellow ...
+    const P_PARAM_COLOUR_T_RANDOM = \HipChat\HipChat::COLOR_RANDOM;
+    const P_PARAM_COLOUR_T_YELLOW = \HipChat\HipChat::COLOR_YELLOW;
+    const P_PARAM_COLOUR_T_GRAY = \HipChat\HipChat::COLOR_GRAY;
+    const P_PARAM_COLOUR_T_GREEN = \HipChat\HipChat::COLOR_GREEN;
+    const P_PARAM_COLOUR_T_PURPLE = \HipChat\HipChat::COLOR_PURPLE;
+    const P_PARAM_COLOUR_T_RED = \HipChat\HipChat::COLOR_RED;
     const P_PARAM_FORMAT = 'format'; // text
+    const P_PARAM_FORMAT_T_TEXT = \HipChat\HipChat::FORMAT_TEXT;
+    const P_PARAM_FORMAT_T_HTML = \HipChat\HipChat::FORMAT_HTML;
 
 
     /**
