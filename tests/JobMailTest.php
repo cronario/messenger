@@ -101,7 +101,6 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
 
     public function testWorkerGetTransport()
     {
-
         $worker = new \Messenger\Mail\Worker();
         $transport = $worker->getTransport('xxx', []);
         $mailObject = $worker->getMail('xxx', 'yyy');

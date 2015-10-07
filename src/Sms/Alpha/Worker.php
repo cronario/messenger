@@ -36,18 +36,18 @@ class Worker extends AbstractWorker
     const CONFIG_P_CLIENT = 'client';
 
     /**
-     * @var client holder
+     * @var \AlphaSMS\Client
      */
     protected $transport;
 
     /**
-     * @return Client
+     * @return \AlphaSMS\Client
      */
     protected function getTransport()
     {
         if (null === $this->transport) {
             $clientConfig = self::getConfig(self::CONFIG_P_CLIENT);
-            $this->transport = new Client($clientConfig['login'], $clientConfig['password']);
+            $this->transport = new \AlphaSMS\Client($clientConfig['login'], $clientConfig['password']);
         }
 
         return $this->transport;
