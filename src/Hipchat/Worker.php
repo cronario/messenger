@@ -4,7 +4,6 @@ namespace Messenger\Hipchat;
 
 use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
-use HipChat\HipChat;
 use Messenger\Template;
 use Messenger\TemplateException;
 
@@ -75,17 +74,22 @@ class Worker extends AbstractWorker
 
     // endregion *************************************************************
 
+    /**
+     * @param $token
+     *
+     * @return \HipChat\HipChat
+     */
     public function getTransport($token)
     {
-        return new HipChat($token);
+        return new \HipChat\HipChat($token);
     }
 
     /**
-     * @param AbstractJob|Job $job
+     * @param Job $job
      *
      * @return bool
      */
-    protected function sendMessage(AbstractJob $job)
+    protected function sendMessage(Job $job)
     {
         // prepare transport
         $transport = $this->getTransport($job->getToken());
@@ -96,8 +100,8 @@ class Worker extends AbstractWorker
             $job->getFrom(),
             $job->getMsg(),
             false,
-            $job->getColour() ?: HipChat::COLOR_YELLOW,
-            $job->getFormat() ?: HipChat::FORMAT_TEXT
+            $job->getColour() ?: \HipChat\HipChat::COLOR_YELLOW,
+            $job->getFormat() ?: \HipChat\HipChat::FORMAT_TEXT
         );
 
         return $response;

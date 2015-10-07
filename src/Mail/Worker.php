@@ -85,21 +85,34 @@ class Worker extends AbstractWorker
 
     // endregion *************************************************************
 
+    /**
+     * @param $host
+     * @param $params
+     *
+     * @return \Zend_Mail_Transport_Smtp
+     */
     public function getTransport($host, $params)
     {
         return new \Zend_Mail_Transport_Smtp($host, $params);
     }
 
+    /**
+     * @return \Zend_Mail
+     */
     public function getMail()
     {
         return new \Zend_Mail('utf-8');
     }
 
+    /**
+     * @param Job $job
+     *
+     * @return array
+     * @throws \Zend_Mail_Exception
+     */
     protected function sendMail(Job $job)
     {
-        /**
-         * prepare Transport
-         */
+        // prepare Transport
         $clientConfig = static::getConfig('client');
 
         $transport = $this->getTransport(
@@ -107,9 +120,7 @@ class Worker extends AbstractWorker
             $clientConfig['params']
         );
 
-        /**
-         * Build mail
-         */
+        // Build mail
         $Email = $this->getMail();
         $Email->setSubject($job->getSubject());
         $Email->setBodyHtml($job->getBody());
@@ -131,9 +142,7 @@ class Worker extends AbstractWorker
             }
         }
 
-        /**
-         * Send mail
-         */
+        // Send mail
         $success = (bool) $Email->send($transport);
 
         $response = [
