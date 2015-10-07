@@ -5,7 +5,6 @@ namespace Messenger\Curl;
 use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
 use Cronario\Logger;
-//
 use Messenger\CurlWrapper;
 use Messenger\CurlWrapperCurlException;
 use Messenger\CurlWrapperException;
@@ -37,7 +36,7 @@ class Worker extends AbstractWorker
             return false;
         }
 
-        if (strpos((string)$where, (string)$what) !== false) {
+        if (strpos((string) $where, (string) $what) !== false) {
             return true;
         }
 
@@ -53,7 +52,6 @@ class Worker extends AbstractWorker
      */
     protected function doJob(AbstractJob $job)
     {
-
         /** @var $job Job */
         $resultData = null;
 
@@ -64,13 +62,13 @@ class Worker extends AbstractWorker
             $response['info'] = $curl->getTransferInfo();
 
         } catch (CurlWrapperCurlException $a) {
-            $job->addDebugData('CurlWrapperCurlException' , $a->getMessage());
+            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
             throw new ResultException(ResultException::ERROR_CURL);
         } catch (CurlWrapperException $a) {
-            $job->addDebugData('CurlWrapperCurlException' , $a->getMessage());
+            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
             throw new ResultException(ResultException::ERROR_CURL);
         } catch (\Exception $a) {
-            $job->addDebugData('CurlWrapperCurlException' , $a->getMessage());
+            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
             throw new ResultException(ResultException::ERROR_CURL);
         }
 

@@ -31,12 +31,18 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         Facade::cleanProducers();
     }
 
+
+    public function createJobSkeleton()
+    {
+        return new \Messenger\Curl\Job([
+            \Messenger\Curl\Job::P_APP_ID  => self::TEST_PRODUCER_MESSENGER_ID,
+            \Messenger\Curl\Job::P_IS_SYNC => true,
+        ]);
+    }
+
     public function testCreateJob()
     {
-        $curl = new \Messenger\Curl\Job([
-            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
-        ]);
-
+        $curl = $this->createJobSkeleton();
         $curl->setUrl('https:://google.com');
         $curl->setMethod('get');
         $curl->setExpectCode(200);
@@ -59,11 +65,7 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
 
     public function testDoJob()
     {
-
-        $curl = new \Messenger\Curl\Job([
-            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
-        ]);
-
+        $curl = $this->createJobSkeleton();
         $curl->setUrl('https://google.com');
         $curl->setMethod('get');
         $curl->setExpectCode(200);
@@ -84,14 +86,9 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
     }
 
 
-
     public function testDoJobFailExpectContent()
     {
-
-        $curl = new \Messenger\Curl\Job([
-            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
-        ]);
-
+        $curl = $this->createJobSkeleton();
         $curl->setUrl('https://google.com');
         $curl->setMethod('get');
         $curl->setExpectContent('abra-cadabra ...');
@@ -105,13 +102,9 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('message', $resultArray);
     }
 
-    public function testDoJobSucces()
+    public function testDoJobSuccess()
     {
-
-        $curl = new \Messenger\Curl\Job([
-            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
-        ]);
-
+        $curl = $this->createJobSkeleton();
         $curl->setUrl('https://google.com');
         $curl->setMethod('get');
         $curl->setSync(true);
@@ -123,5 +116,39 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertArrayHasKey('globalCode', $resultArray);
         $this->assertArrayHasKey('message', $resultArray);
     }
+
+
+    public function testDoJobFailException()
+    {
+        $curl = $this->createJobSkeleton();
+        $curl->setUrl('rpc');
+        $curl->setMethod('get');
+        $curl->setSync(true);
+
+        $result = $curl();
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
+
+    public function testDoJobFailContainContent()
+    {
+        $curl = $this->createJobSkeleton();
+        $curl->setUrl('rpc');
+        $curl->setMethod('get');
+        $curl->setSync(true);
+        $curl->getExpectContent();
+
+        $result = $curl();
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
 
 }
