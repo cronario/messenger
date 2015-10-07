@@ -4,8 +4,6 @@ namespace Messenger\Mail;
 
 use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
-use Messenger\Template;
-use Messenger\TemplateException;
 
 class Worker extends AbstractWorker
 {

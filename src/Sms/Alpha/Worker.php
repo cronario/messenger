@@ -6,8 +6,6 @@ use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
 use Messenger\Sms\Job;
 use Messenger\Sms\ResultException;
-use Messenger\Template;
-use Messenger\TemplateException;
 use Messenger\Sms\Worker as SmsWorker;
 
 /**

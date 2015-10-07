@@ -4,8 +4,6 @@ namespace Messenger\Hipchat;
 
 use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
-use Messenger\Template;
-use Messenger\TemplateException;
 
 /**
  * Class Worker
