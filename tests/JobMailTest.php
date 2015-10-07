@@ -5,6 +5,30 @@ namespace Messenger\Test;
 use \Cronario\Facade;
 use \Cronario\Producer;
 
+class mockZend_Mail_Transport_Smtp
+{
+
+}
+
+class mockZend_Mail
+{
+
+    public function __call($method, $args)
+    {
+
+    }
+
+    public static function __callStatic($method, $args)
+    {
+
+    }
+
+    public function createAttachment($arg)
+    {
+        return new \stdClass();
+    }
+
+}
 
 class JobMailTest extends \PHPUnit_Framework_TestCase
 {
@@ -32,12 +56,20 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         Facade::cleanProducers();
     }
 
-    public function testCreateJob()
+
+    public function createJobSkeleton()
     {
-        $mail = new \Messenger\Mail\Job([
-            \Messenger\Curl\Job::P_APP_ID => self::TEST_PRODUCER_MESSENGER_ID
+        return new \Messenger\Mail\Job([
+            \Messenger\Mail\Job::P_APP_ID  => self::TEST_PRODUCER_MESSENGER_ID,
+            \Messenger\Mail\Job::P_IS_SYNC => true,
         ]);
 
+    }
+
+
+    public function testCreateJob()
+    {
+        $mail = $this->createJobSkeleton();
         $mail->setFromName('Mail Boss');
         $mail->setFromMail('boss@example.com');
         $mail->setSubject('Big boss says!');
@@ -53,6 +85,7 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
                 \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ID          => 'att-id-123',
             ]
         ]);
+        $mail->setTemplate('register');
 
         $this->assertInstanceOf('\\Messenger\\Mail\\Job', $mail);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $mail);
@@ -63,12 +96,129 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('worker@example.com', $mail->getToMail());
         $this->assertEquals('text text text ...', $mail->getBody());
         $this->assertInternalType('array', $mail->getAttachment());
+        $this->assertEquals('register', $mail->getTemplate());
+    }
+
+    public function testWorkerGetTransport()
+    {
+
+        $worker = new \Messenger\Mail\Worker();
+        $transport = $worker->getTransport('xxx', []);
+        $mailObject = $worker->getMail('xxx', 'yyy');
+
+        $this->assertInstanceOf('\\Zend_Mail_Transport_Smtp', $transport);
+        $this->assertInstanceOf('\\Zend_Mail', $mailObject);
     }
 
 
     public function testDoJob()
     {
-        $this->assertTrue(!!true);
+        $mockTransport = new mockZend_Mail_Transport_Smtp('xxx', []);
+        $mockMailObject = new mockZend_Mail('xxx');
+
+        /** @var \Messenger\Mail\Worker $workerMail */
+        $workerMail = $this->getMock('\Messenger\Mail\Worker', ['getTransport', 'getMail']);
+        $workerMail
+            ->method('getTransport')
+            ->will($this->returnValue($mockTransport));
+        $workerMail
+            ->method('getMail')
+            ->will($this->returnValue($mockMailObject));
+
+
+        $mail = $this->createJobSkeleton();
+        $mail->setFromName('Mail Boss');
+        $mail->setFromMail('boss@example.com');
+        $mail->setSubject('Big boss says!');
+        $mail->setToMail('worker@example.com');
+        $mail->setBody('text text text ...');
+        $mail->setAttachment([
+            [
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__PATH        => __FILE__,
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__NAME        => 'file',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__TYPE        => 'text/csv',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__DISPOSITION => 'big data file',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ENCODING    => 'UTF-8',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ID          => 'att-id-123',
+            ]
+        ]);
+
+        $result = $workerMail($mail);
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
+
+    public function testDoJobValidateFail()
+    {
+
+        $mail = $this->createJobSkeleton();
+//        $mail->setFromMail('boss@example.com');
+//        $mail->setFromName('Mail Boss');
+//        $mail->setToMail('worker@example.com');
+//        $mail->setSubject('Big boss says!');
+        $mail->setBody('text text text ...');
+
+        $result = $mail();
+
+        $this->assertGreaterThan(0, $result->getGlobalCode());
+
+        // ==========================
+
+
+        $mail = $this->createJobSkeleton();
+        $mail->setFromMail('boss@example.com');
+//        $mail->setFromName('Mail Boss');
+//        $mail->setToMail('worker@example.com');
+//        $mail->setSubject('Big boss says!');
+//        $mail->setBody('text text text ...');
+
+        $result = $mail();
+
+        $this->assertGreaterThan(0, $result->getGlobalCode());
+
+        // ==========================
+
+        $mail = $this->createJobSkeleton();
+        $mail->setFromMail('boss@example.com');
+        $mail->setFromName('Mail Boss');
+//        $mail->setToMail('worker@example.com');
+//        $mail->setSubject('Big boss says!');
+//        $mail->setBody('text text text ...');
+
+        $result = $mail();
+
+        $this->assertGreaterThan(0, $result->getGlobalCode());
+
+        // ==========================
+
+        $mail = $this->createJobSkeleton();
+        $mail->setFromMail('boss@example.com');
+        $mail->setFromName('Mail Boss');
+        $mail->setToMail('worker@example.com');
+//        $mail->setSubject('Big boss says!');
+//        $mail->setBody('text text text ...');
+
+        $result = $mail();
+
+        $this->assertGreaterThan(0, $result->getGlobalCode());
+
+        // ==========================
+
+        $mail = $this->createJobSkeleton();
+        $mail->setFromMail('boss@example.com');
+        $mail->setFromName('Mail Boss');
+        $mail->setToMail('worker@example.com');
+        $mail->setSubject('Big boss says!');
+//        $mail->setBody('text text text ...');
+
+        $result = $mail();
+
+        $this->assertGreaterThan(0, $result->getGlobalCode());
+
     }
 
 }

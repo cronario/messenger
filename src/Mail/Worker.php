@@ -17,7 +17,7 @@ class Worker extends AbstractWorker
             'client' => [
                 'host'   => '...',
                 'params' => [
-                    '...'     => '...',
+                    '...' => '...',
                 ],
             ]
         ];
@@ -85,6 +85,15 @@ class Worker extends AbstractWorker
 
     // endregion *************************************************************
 
+    public function getTransport($host, $params)
+    {
+        return new \Zend_Mail_Transport_Smtp($host, $params);
+    }
+
+    public function getMail()
+    {
+        return new \Zend_Mail('utf-8');
+    }
 
     protected function sendMail(Job $job)
     {
@@ -93,7 +102,7 @@ class Worker extends AbstractWorker
          */
         $clientConfig = static::getConfig('client');
 
-        $transport = new \Zend_Mail_Transport_Smtp(
+        $transport = $this->getTransport(
             $clientConfig['host'],
             $clientConfig['params']
         );
@@ -101,7 +110,7 @@ class Worker extends AbstractWorker
         /**
          * Build mail
          */
-        $Email = new \Zend_Mail('utf-8');
+        $Email = $this->getMail();
         $Email->setSubject($job->getSubject());
         $Email->setBodyHtml($job->getBody());
         $Email->setBodyText(strip_tags($job->getBody()));
@@ -125,7 +134,7 @@ class Worker extends AbstractWorker
         /**
          * Send mail
          */
-        $success = (bool)$Email->send($transport);
+        $success = (bool) $Email->send($transport);
 
         $response = [
             'success' => $success
@@ -155,15 +164,6 @@ class Worker extends AbstractWorker
 
         } catch (\Exception $ex) {
             throw new ResultException(ResultException::RETRY_TRANSPORT_ERROR);
-        }
-
-        if ($response['ok']) {
-            // TODO ....
-            // ....
-        }
-        if (!$response['ok']) {
-            // TODO ....
-            // ....
         }
 
         throw new ResultException(ResultException::R_SUCCESS, $resultData);
