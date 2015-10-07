@@ -7,7 +7,6 @@ use Cronario\AbstractJob;
 class Job extends AbstractJob
 {
 
-    const P_PARAM_TEMPLATE = 'template';
     const P_PARAM_TOKEN = 'token';
     const P_PARAM_ROOM = 'room';
     const P_PARAM_FROM = 'from';
@@ -22,25 +21,6 @@ class Job extends AbstractJob
     const P_PARAM_FORMAT = 'format'; // text
     const P_PARAM_FORMAT_T_TEXT = \HipChat\HipChat::FORMAT_TEXT;
     const P_PARAM_FORMAT_T_HTML = \HipChat\HipChat::FORMAT_HTML;
-
-
-    /**
-     * @return null
-     */
-    public function getTemplate()
-    {
-        return $this->getParam(self::P_PARAM_TEMPLATE);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setTemplate($value)
-    {
-        return $this->setParam(self::P_PARAM_TEMPLATE, $value);
-    }
 
     /**
      * @return null

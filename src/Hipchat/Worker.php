@@ -15,36 +15,6 @@ use Messenger\TemplateException;
 class Worker extends AbstractWorker
 {
 
-    // region TEMPLATE ********************************************************
-
-    /**
-     * @param Job $job
-     *
-     * @throws ResultException|null
-     */
-    protected function buildTemplate(Job $job)
-    {
-        try {
-            $args = $job->getTemplate();
-            $template = new Template($args[0], $args[1], $args[2]);
-            $fields = $template->make();
-
-            $job->setToken($fields[Job::P_PARAM_TOKEN]);
-            $job->setRoom($fields[Job::P_PARAM_ROOM]);
-            $job->setFrom($fields[Job::P_PARAM_FROM]);
-            $job->setMsg($fields[Job::P_PARAM_MSG]);
-
-            $job->setTemplate(null);
-            $job->save();
-
-        } catch (TemplateException $ex) {
-            throw new ResultException(ResultException::ERROR_BUILD_TEMPLATE);
-        }
-    }
-
-    // endregion *************************************************************
-
-
     // region VALIDATE ********************************************************
 
     /**
@@ -114,10 +84,6 @@ class Worker extends AbstractWorker
      */
     protected function doJob(AbstractJob $job)
     {
-        if (is_array($job->getTemplate())) {
-            $this->buildTemplate($job);
-        }
-
         $this->validateJobParams($job);
 
         try {

@@ -64,7 +64,6 @@ class JobHipchatTest extends \PHPUnit_Framework_TestCase
         $hipchat->setFormat(\Messenger\Hipchat\Job::P_PARAM_FORMAT_T_TEXT);
         $hipchat->setColour(\Messenger\Hipchat\Job::P_PARAM_COLOUR_T_RED);
         $hipchat->setMsg('Test my msg like a boss!');
-        $hipchat->setTemplate('register');
 
         $this->assertInstanceOf('\\Messenger\\Hipchat\\Job', $hipchat);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $hipchat);
@@ -75,7 +74,6 @@ class JobHipchatTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(\Messenger\Hipchat\Job::P_PARAM_FORMAT_T_TEXT, $hipchat->getFormat());
         $this->assertEquals(\Messenger\Hipchat\Job::P_PARAM_COLOUR_T_RED, $hipchat->getColour());
         $this->assertEquals('Test my msg like a boss!', $hipchat->getMsg());
-        $this->assertEquals('register', $hipchat->getTemplate());
     }
 
 

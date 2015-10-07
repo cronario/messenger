@@ -85,7 +85,6 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
                 \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ID          => 'att-id-123',
             ]
         ]);
-        $mail->setTemplate('register');
 
         $this->assertInstanceOf('\\Messenger\\Mail\\Job', $mail);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $mail);
@@ -96,7 +95,6 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('worker@example.com', $mail->getToMail());
         $this->assertEquals('text text text ...', $mail->getBody());
         $this->assertInternalType('array', $mail->getAttachment());
-        $this->assertEquals('register', $mail->getTemplate());
     }
 
     public function testWorkerGetTransport()

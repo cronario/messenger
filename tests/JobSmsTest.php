@@ -68,14 +68,12 @@ class JobSmsTest extends \PHPUnit_Framework_TestCase
         $sms->setRecipient('380670000000');
         $sms->setSender('sender');
         $sms->setText('text');
-        $sms->setTemplate('template');
 
         $this->assertInstanceOf('\\Messenger\\Sms\\Job', $sms);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $sms);
         $this->assertEquals('380670000000', $sms->getRecipient());
         $this->assertEquals('sender', $sms->getSender());
         $this->assertEquals('text', $sms->getText());
-        $this->assertEquals('template', $sms->getTemplate());
     }
 
     public function testDoJobByAlphaSms()

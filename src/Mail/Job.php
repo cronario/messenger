@@ -7,8 +7,6 @@ use Cronario\AbstractJob;
 class Job extends AbstractJob
 {
 
-    const P_PARAM_TEMPLATE = 'template';
-
     const P_PARAM_FROM_MAIL = 'fromMail';
     const P_PARAM_FROM_NAME = 'fromName';
     const P_PARAM_TO_MAIL = 'toMail';
@@ -22,24 +20,6 @@ class Job extends AbstractJob
     const P_PARAM_ATTACHMENT__DISPOSITION = 'd';
     const P_PARAM_ATTACHMENT__ENCODING = 'e';
     const P_PARAM_ATTACHMENT__ID = 'id';
-
-    /**
-     * @return int|null|string
-     */
-    public function getTemplate()
-    {
-        return $this->getParam(self::P_PARAM_TEMPLATE);
-    }
-
-    /**
-     * @param $value
-     *
-     * @return $this
-     */
-    public function setTemplate($value)
-    {
-        return $this->setParam(self::P_PARAM_TEMPLATE, $value);
-    }
 
     /**
      * @return int|null|string
