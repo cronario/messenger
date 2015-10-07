@@ -75,6 +75,34 @@ class Worker extends AbstractWorker
 
     // endregion *************************************************************
 
+    public function getTransport($token)
+    {
+        return new HipChat($token);
+    }
+
+    /**
+     * @param AbstractJob|Job $job
+     *
+     * @return bool
+     */
+    protected function sendMessage(AbstractJob $job)
+    {
+        // prepare transport
+        $transport = $this->getTransport($job->getToken());
+
+        // Send message
+        $response = $transport->message_room(
+            $job->getRoom(),
+            $job->getFrom(),
+            $job->getMsg(),
+            false,
+            $job->getColour() ?: HipChat::COLOR_YELLOW,
+            $job->getFormat() ?: HipChat::FORMAT_TEXT
+        );
+
+        return $response;
+    }
+
     /**
      * @param AbstractJob|Job $job
      *
@@ -89,21 +117,7 @@ class Worker extends AbstractWorker
         $this->validateJobParams($job);
 
         try {
-            // prepare transport
-            $transport = new HipChat($job->getToken());
-
-            // Send message
-            $response = $transport->message_room(
-                $job->getRoom(),
-                $job->getFrom(),
-                $job->getMsg(),
-                false,
-                $job->getColour() ?: HipChat::COLOR_YELLOW,
-                $job->getFormat() ?: HipChat::FORMAT_TEXT
-            );
-
-            $resultData['response'] = $response;
-
+            $resultData['response'] = $this->sendMessage($job);
         } catch (\Exception $ex) {
             throw new ResultException(ResultException::ERROR_TRANSPORT);
         }
