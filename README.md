@@ -7,11 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-Addition to Cronario which has already implemented the main types of Jobs and Workers:
-- Curl
-- Sms
-- Mail
-- Hipchat
+Addition to Cronario which has already implemented the main types of Jobs and Workers: **Curl, Sms, Mail, Hipchat**
 
 ## Install
 
@@ -23,10 +19,11 @@ $ composer require cronario/messenger
 
 ## Usage
 
-### Curl
+
+### Examples Curl / Hipchat / Sms / Mail
 
 ``` php
-// asynchronous background ping each minute
+// Curl
 $ping = new \Messenger\Curl\Job([
     'params'   => [
         'url'        => 'https://example.com',
@@ -39,83 +36,38 @@ $ping = new \Messenger\Curl\Job([
 ]);
 
 $result = $ping();
-/*
-	$result = ['...'];
-*/
-```
 
-``` php
-// simple synchronous request
-
-$job = new \Messenger\Curl\Job([
-    'params'  => [
-        'url'    => 'https://example.com',
-        'method' => 'GET',
-    ],
-    'comment' => "...",
-    'isSync'  => true,
-]);
-
-$result = $job();
-
-/*
-	$result = ['...'];
-*/
-```
-### Hipchat
-
-
-``` php
-// asynchronous send
-$hipchat = new Job([
+// Hipchat
+$hipchat = new \Messenger\Hipchat\Job([
     'params'  => [
         'token'  => 'xxx',
         'room'   => 'MyRoom',
         'from'   => 'Test',
-        'msg'    => 'random',
-        'colour' => 'text',
-        'format' => "Message super text ...",
+        'msg'    => 'text ...',
     ],
-    'comment' => "ping each minute",
+    'comment' => "hipchat message",
     'isSync'  => false,
 ]);
 
 $result = $hipchat();
 
-/*
-	$result = ['...'];
-*/
-```
 
-
-### Sms
-
-
-``` php
-// asynchronous send
-$sms = new Job([
+// Sms
+$sms = new \Messenger\Sms\Job([
     'params' => [
         'recipient' => '380670000000',
         'sender'    => 'SuperCompany',
-        'text'      => "Hi Vlad!",
+        'text'      => "Hellow world!",
     ],
-    'comment'     => "my async sms",
+    'comment'     => "My first sms",
     'isSync'      => false,
 ]);
 
 $result = $sms();
 
-/*
-    $result = ['...'];
-*/
-```
 
-### Mail
-
-
-``` php
-// asynchronous send
-$mail = new Job([
+// Mail
+$mail = new \Messenger\Mail\Job([
     Job::P_PARAMS => [
         'fromMail' => 'boss@example.com',
         'fromName' => 'Big Boss',
@@ -123,35 +75,49 @@ $mail = new Job([
         'subject'  => "Subject ...",
         'body'     => "Body ....",
     ],
-    'comment'     => "my async sms",
+    'comment'     => "My first mail",
     'isSync'      => false,
 ]);
+
 $result = $mail();
 
-/*
-    $result = ['...'];
-*/
 ```
 
-## Change log
+### Example combine Curl and Sms 
 
-Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
+``` php
+$ping = new \Messenger\Curl\Job([
+    'params'   => [
+        'url'        => 'https://example.com',
+        'method'     => 'GET',
+        'expectCode' => 200,
+    ],
+    'comment'  => "get something",
+    'callback' => [
+        'onSuccess' => [
+            new \Messenger\Sms\Job([
+                'params'   => [
+                    'recipient' => '380670000000',
+                    'sender'    => 'SuperCompany',
+                    'text'      => "Hellow world!",
+                ],
+                'comment'  => "My callback sms",
+                'callback' => [
+                    /* ... */
+                ]
+            ])
+        ]
+    ]
+]);
+
+$ping();
+```
 
 ## Testing
 
 ``` bash
 $ composer test
 ```
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-
-## Credits
-
-- [Vlad Groznov][link-author]
-- [All Contributors][link-contributors]
 
 ## License
 
@@ -171,4 +137,3 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-downloads]: https://packagist.org/packages/cronario/messenger
 [link-author]: https://github.com/vlad-groznov
 [link-contributors]: ../../contributors
-
