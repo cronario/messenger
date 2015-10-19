@@ -1,48 +1,60 @@
 {
-    "name": "cronario/messenger",
-    "description": "Send Message like a Boss",
-    "keywords": [
-      "Cronario",
-      "Messenger", "Message",
-      "Worker", "Job", "Result",
-      "Asynchronous", "Synchronous",
-      "Async", "Sync",
-      "Sms", "Hipchat", "Curl", "Whatsapp", "Mail"
-    ],
-    "homepage": "http://cronar.io",
-    "license": "MIT",
-    "authors": [
-        {
-          "name": "Gryaznov Vladislav",
-          "email": "v.gryaznov@interkassa.com",
-          "homepage": "https://interkassa.com",
-          "role": "Developer"
-        }
-    ],
-    "require": {
-        "php" : ">=5.5.0",
-        "cronario/cronario" : "0.1.*",
-        "hipchat/hipchat-php": ">=1.0.0"
-    },
-    "require-dev": {
-        "phpunit/phpunit" : "4.*"
-    },
-    "autoload": {
-        "psr-4": {
-            "Messenger\\": "src"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Messenger\\Test\\": "tests"
-        }
-    },
-    "scripts": {
-        "test": "phpunit"
-    },
-    "extra": {
-        "branch-alias": {
-            "dev-master": "0.1.*-dev"
-        }
+  "name": "cronario/messenger",
+  "description": "Send Messages like a Boss",
+  "keywords": [
+    "Cronario",
+    "Messenger",
+    "Message",
+    "Worker",
+    "Job",
+    "Result",
+    "Asynchronous",
+    "Synchronous",
+    "Async",
+    "Sync",
+    "Sms",
+    "Hipchat",
+    "Curl",
+    "Whatsapp",
+    "Mail"
+  ],
+  "homepage": "http://cronar.io",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Gryaznov Vladislav",
+      "email": "v.gryaznov@interkassa.com",
+      "homepage": "https://interkassa.com",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": ">=5.5.0",
+    "cronario/cronario": "0.1.*",
+    "cronario/messenger-alphasms": "0.1.9",
+    "hipchat/hipchat-php": ">=1.0.0",
+    "svyatov/curlwrapper": "~1.3",
+    "zf1/zend-mail": "~1.12"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "4.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Messenger\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Messenger\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "phpunit"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "0.1.*-dev"
+    }
+  }
 }

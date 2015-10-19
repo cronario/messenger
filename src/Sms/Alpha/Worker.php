@@ -6,8 +6,6 @@ use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
 use Messenger\Sms\Job;
 use Messenger\Sms\ResultException;
-use Messenger\Template;
-use Messenger\TemplateException;
 use Messenger\Sms\Worker as SmsWorker;
 
 /**
@@ -36,55 +34,24 @@ class Worker extends AbstractWorker
     const CONFIG_P_CLIENT = 'client';
 
     /**
-     * @var client holder
+     * @var \AlphaSMS\Client
      */
     protected $transport;
 
     /**
-     * @return Client
+     * @return \AlphaSMS\Client
      */
     protected function getTransport()
     {
         if (null === $this->transport) {
             $clientConfig = self::getConfig(self::CONFIG_P_CLIENT);
-            $this->transport = new Client($clientConfig['login'], $clientConfig['password']);
+            $this->transport = new \AlphaSMS\Client($clientConfig['login'], $clientConfig['password']);
         }
 
         return $this->transport;
     }
 
     // endregion *************************************************************
-
-
-    // region TEMPLATE ********************************************************
-
-    /**
-     * @param Job $job
-     *
-     * @throws ResultException
-     */
-    protected function buildTemplate(Job $job)
-    {
-        try {
-            $args = $job->getTemplate();
-            $template = new Template($args[0], $args[1], $args[2]);
-            $fields = $template->make();
-
-            $job->setSender($fields[Job::P_PARAM_SENDER]);
-            $job->setRecipient($fields[Job::P_PARAM_RECIPIENT]);
-            $job->setText($fields[Job::P_PARAM_TEXT]);
-
-            $job->setTemplate(null);
-            $job->save();
-
-        } catch (TemplateException $ex) {
-            $job->addDebugData('exception', $ex->getMessage());
-            throw new ResultException(ResultException::ERROR_BUILD_TEMPLATE);
-        }
-    }
-
-    // endregion *************************************************************
-
 
     // region VALIDATE ********************************************************
 
@@ -112,10 +79,6 @@ class Worker extends AbstractWorker
      */
     protected function doJob(AbstractJob $job)
     {
-        if (is_array($job->getTemplate())) {
-            $this->buildTemplate($job);
-        }
-
         $this->validateJobParams($job);
 
         $resultData = SmsWorker::buildResultDataDefault(__NAMESPACE__);

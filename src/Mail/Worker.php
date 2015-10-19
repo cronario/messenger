@@ -4,53 +4,19 @@ namespace Messenger\Mail;
 
 use Cronario\AbstractJob;
 use Cronario\AbstractWorker;
-use Messenger\Template;
-use Messenger\TemplateException;
 
 class Worker extends AbstractWorker
 {
-
-    // region TEMPLATE ********************************************************
 
     protected static $config
         = [
             'client' => [
                 'host'   => '...',
                 'params' => [
-                    '...'     => '...',
+                    '...' => '...',
                 ],
             ]
         ];
-
-
-    /**
-     * @param Job $job
-     *
-     * @throws ResultException|null
-     */
-    protected function buildTemplate(Job $job)
-    {
-        try {
-            $args = $job->getTemplate();
-            $template = new Template($args[0], $args[1], $args[2]);
-            $fields = $template->make();
-
-            $job->setFromMail($fields[Job::P_PARAM_FROM_MAIL]);
-            $job->setFromName($fields[Job::P_PARAM_FROM_NAME]);
-            $job->setToMail($fields[Job::P_PARAM_TO_MAIL]);
-            $job->setSubject($fields[Job::P_PARAM_SUBJECT]);
-            $job->setBody($fields[Job::P_PARAM_BODY]);
-
-            $job->setTemplate(null);
-            $job->save();
-
-        } catch (TemplateException $ex) {
-            throw new ResultException(ResultException::ERROR_BUILD_TEMPLATE);
-        }
-    }
-
-    // endregion *************************************************************
-
 
     // region VALIDATE ********************************************************
 
@@ -85,23 +51,43 @@ class Worker extends AbstractWorker
 
     // endregion *************************************************************
 
+    /**
+     * @param $host
+     * @param $params
+     *
+     * @return \Zend_Mail_Transport_Smtp
+     */
+    public function getTransport($host, $params)
+    {
+        return new \Zend_Mail_Transport_Smtp($host, $params);
+    }
 
+    /**
+     * @return \Zend_Mail
+     */
+    public function getMail()
+    {
+        return new \Zend_Mail('utf-8');
+    }
+
+    /**
+     * @param Job $job
+     *
+     * @return array
+     * @throws \Zend_Mail_Exception
+     */
     protected function sendMail(Job $job)
     {
-        /**
-         * prepare Transport
-         */
+        // prepare Transport
         $clientConfig = static::getConfig('client');
 
-        $transport = new \Zend_Mail_Transport_Smtp(
+        $transport = $this->getTransport(
             $clientConfig['host'],
             $clientConfig['params']
         );
 
-        /**
-         * Build mail
-         */
-        $Email = new \Zend_Mail('utf-8');
+        // Build mail
+        $Email = $this->getMail();
         $Email->setSubject($job->getSubject());
         $Email->setBodyHtml($job->getBody());
         $Email->setBodyText(strip_tags($job->getBody()));
@@ -122,10 +108,8 @@ class Worker extends AbstractWorker
             }
         }
 
-        /**
-         * Send mail
-         */
-        $success = (bool)$Email->send($transport);
+        // Send mail
+        $success = (bool) $Email->send($transport);
 
         $response = [
             'success' => $success
@@ -141,10 +125,6 @@ class Worker extends AbstractWorker
      */
     protected function doJob(AbstractJob $job)
     {
-        if (is_array($job->getTemplate())) {
-            $this->buildTemplate($job);
-        }
-
         $this->validateJobParams($job);
 
         try {
@@ -155,15 +135,6 @@ class Worker extends AbstractWorker
 
         } catch (\Exception $ex) {
             throw new ResultException(ResultException::RETRY_TRANSPORT_ERROR);
-        }
-
-        if ($response['ok']) {
-            // TODO ....
-            // ....
-        }
-        if (!$response['ok']) {
-            // TODO ....
-            // ....
         }
 
         throw new ResultException(ResultException::R_SUCCESS, $resultData);

@@ -1,12 +1,19 @@
-sudo: true
+sudo: false
 
 language: php
 php:
   - 5.5
   - 5.6
+  - 7.0
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - php: 7.0
 
 install:
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - travis_retry composer self-update && composer --version
   - composer install
 
 services:
@@ -17,11 +24,8 @@ after_script:
   - |
     if [ $TRAVIS_PHP_VERSION = '5.6' ]; then
       travis_retry wget https://scrutinizer-ci.com/ocular.phar
-      php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+      php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
     fi
-
-before_script:
-  - pecl install pthreads
 
 cache:
   directories:
