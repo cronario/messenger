@@ -92,10 +92,10 @@ class Worker extends AbstractWorker
             $resultData[SmsWorker::P_RESULT_DATA_VENDOR_ID] = $response['id'];
             $resultData[SmsWorker::P_RESULT_DATA_ERRORS] = $response['errors'];
 
-            $job->addDebugData('vendor_response', $response);
+            $job->addDebug(['vendor_response' => $response]);
 
         } catch (\Exception $ex) {
-            $job->addDebugData('exception', $ex->getMessage());
+            $job->addDebug(['exception' => $ex->getMessage()]);
             throw new ResultException(ResultException::ERROR_TRANSPORT);
         }
 
@@ -105,7 +105,7 @@ class Worker extends AbstractWorker
             if (!$job->isSync()) {
                 // redirect result for new root gateway class
                 $gatewayClass = static::getConfig(SmsWorker::GATEWAY_DISPATCH_CLASS);
-                $job->addDebugData('set_gateway', $gatewayClass);
+                $job->addDebug(['set_gateway' => $gatewayClass]);
                 $job->setWorkerClass($gatewayClass)->save();
                 throw new ResultException(ResultException::RETRY_GATEWAY_DISPATCH_CLASS);
             }
