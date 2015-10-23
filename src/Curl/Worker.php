@@ -62,13 +62,13 @@ class Worker extends AbstractWorker
             $response['info'] = $curl->getTransferInfo();
 
         } catch (CurlWrapperCurlException $a) {
-            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
+            $job->addDebug(['CurlWrapperCurlException' => $a->getMessage()]);
             throw new ResultException(ResultException::ERROR_CURL);
         } catch (CurlWrapperException $a) {
-            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
+            $job->addDebug(['CurlWrapperCurlException' => $a->getMessage()]);
             throw new ResultException(ResultException::ERROR_CURL);
         } catch (\Exception $a) {
-            $job->addDebugData('CurlWrapperCurlException', $a->getMessage());
+            $job->addDebug(['CurlWrapperCurlException' => $a->getMessage()]);
             throw new ResultException(ResultException::ERROR_CURL);
         }
 

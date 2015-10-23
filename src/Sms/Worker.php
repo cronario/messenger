@@ -128,7 +128,7 @@ class Worker extends AbstractWorker
         }
 
         // redirect result for new gateway class
-        $job->addDebugData('set_gateway', $gatewayClass);
+        $job->addDebug(['set_gateway' => $gatewayClass]);
         $job->setWorkerClass($gatewayClass)->save();
 
         throw new ResultException(ResultException::REDIRECT_GATEWAY_CLASS);
