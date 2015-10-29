@@ -87,10 +87,10 @@ class Worker extends AbstractWorker
          * analise response
          */
         if ($job->getExpectCode() && $job->getExpectCode() != $response['info']['http_code']) {
-            throw new ResultException(ResultException::FAILURE_EXPECTED_HTTP_CODE, $resultData);
+            throw new ResultException(ResultException::RETRY_EXPECTED_HTTP_CODE, $resultData);
 
         } elseif ($job->getExpectContent() && !$this->isContain($job->getExpectContent(), $response['content'])) {
-            throw new ResultException(ResultException::FAILURE_EXPECTED_CONTENT, $resultData);
+            throw new ResultException(ResultException::RETRY_EXPECTED_CONTENT, $resultData);
         }
 
         /**
