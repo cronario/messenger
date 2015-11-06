@@ -9,10 +9,20 @@ class Job extends AbstractJob
 
     const P_PARAM_URL = 'url';
     const P_PARAM_METHOD = 'method';
+    const P_PARAM_REQUEST_PARAMS = 'requestParams';
     const P_PARAM_EXPECT_CONTENT = 'expectContent';
     const P_PARAM_EXPECT_CODE = 'expectCode';
     const P_PARAM_SAVE_CONTENT = 'saveContent';
     const P_PARAM_SAVE_INFO = 'saveInfo';
+
+
+    /**
+     * @return null
+     */
+    public function getUrl()
+    {
+        return $this->getParam(self::P_PARAM_URL);
+    }
 
     /**
      * @param $url
@@ -27,9 +37,9 @@ class Job extends AbstractJob
     /**
      * @return null
      */
-    public function getUrl()
+    public function getMethod()
     {
-        return $this->getParam(self::P_PARAM_URL);
+        return $this->getParam(self::P_PARAM_METHOD);
     }
 
     /**
@@ -43,21 +53,21 @@ class Job extends AbstractJob
     }
 
     /**
-     * @return null
+     * @return null|array
      */
-    public function getMethod()
+    public function getRequestParams()
     {
-        return $this->getParam(self::P_PARAM_METHOD);
+        return $this->getParam(self::P_PARAM_REQUEST_PARAMS);
     }
 
     /**
-     * @param $text
+     * @param $requestParams
      *
      * @return $this
      */
-    public function setExpectContent($text)
+    public function setRequestParams($requestParams)
     {
-        return $this->setParam(self::P_PARAM_EXPECT_CONTENT, $text);
+        return $this->setParam(self::P_PARAM_REQUEST_PARAMS, $requestParams);
     }
 
     /**
@@ -73,9 +83,9 @@ class Job extends AbstractJob
      *
      * @return $this
      */
-    public function setExpectCode($text)
+    public function setExpectContent($text)
     {
-        return $this->setParam(self::P_PARAM_EXPECT_CODE, $text);
+        return $this->setParam(self::P_PARAM_EXPECT_CONTENT, $text);
     }
 
     /**
@@ -87,13 +97,13 @@ class Job extends AbstractJob
     }
 
     /**
-     * @param $boo
+     * @param $text
      *
      * @return $this
      */
-    public function setSaveContent($boo)
+    public function setExpectCode($text)
     {
-        return $this->setParam(self::P_PARAM_SAVE_CONTENT, $boo);
+        return $this->setParam(self::P_PARAM_EXPECT_CODE, $text);
     }
 
     /**
@@ -109,9 +119,9 @@ class Job extends AbstractJob
      *
      * @return $this
      */
-    public function setSaveInfo($boo)
+    public function setSaveContent($boo)
     {
-        return $this->setParam(self::P_PARAM_SAVE_INFO, $boo);
+        return $this->setParam(self::P_PARAM_SAVE_CONTENT, $boo);
     }
 
     /**
@@ -120,6 +130,16 @@ class Job extends AbstractJob
     public function getSaveInfo()
     {
         return $this->getParam(self::P_PARAM_SAVE_INFO);
+    }
+
+    /**
+     * @param $boo
+     *
+     * @return $this
+     */
+    public function setSaveInfo($boo)
+    {
+        return $this->setParam(self::P_PARAM_SAVE_INFO, $boo);
     }
 
 }

@@ -57,7 +57,7 @@ class Worker extends AbstractWorker
 
         try {
             $curl = new CurlWrapper();
-            $curl->request($job->getUrl(), $job->getMethod());
+            $curl->request($job->getUrl(), $job->getMethod(), $job->getRequestParams());
             $response['content'] = $curl->getResponse();
             $response['info'] = $curl->getTransferInfo();
 
