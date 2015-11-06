@@ -57,7 +57,7 @@ class Worker extends AbstractWorker
 
         try {
             $curl = new CurlWrapper();
-            $curl->request($job->getUrl(), $job->getMethod());
+            $curl->request($job->getUrl(), $job->getMethod(), $job->getRequestParams());
             $response['content'] = $curl->getResponse();
             $response['info'] = $curl->getTransferInfo();
 
@@ -87,10 +87,10 @@ class Worker extends AbstractWorker
          * analise response
          */
         if ($job->getExpectCode() && $job->getExpectCode() != $response['info']['http_code']) {
-            throw new ResultException(ResultException::FAILURE_EXPECTED_HTTP_CODE, $resultData);
+            throw new ResultException(ResultException::RETRY_EXPECTED_HTTP_CODE, $resultData);
 
         } elseif ($job->getExpectContent() && !$this->isContain($job->getExpectContent(), $response['content'])) {
-            throw new ResultException(ResultException::FAILURE_EXPECTED_CONTENT, $resultData);
+            throw new ResultException(ResultException::RETRY_EXPECTED_CONTENT, $resultData);
         }
 
         /**

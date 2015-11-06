@@ -45,6 +45,7 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         $curl = $this->createJobSkeleton();
         $curl->setUrl('https:://google.com');
         $curl->setMethod('get');
+        $curl->setRequestParams(['param-1' => 'value-1']);
         $curl->setExpectCode(200);
         $curl->setExpectContent('google');
         $curl->setSaveContent(true);
@@ -53,6 +54,7 @@ class JobCurlTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('\\Messenger\\Curl\\Job', $curl);
         $this->assertInstanceOf('\\Cronario\\AbstractJob', $curl);
 
+        $this->assertInternalType('array', $curl->getRequestParams());
         $this->assertEquals('https:://google.com', $curl->getUrl());
         $this->assertEquals('get', $curl->getMethod());
         $this->assertEquals(200, $curl->getExpectCode());

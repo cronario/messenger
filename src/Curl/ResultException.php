@@ -12,6 +12,9 @@ class ResultException extends IkResultException
 
     const ERROR_CURL = 401;
 
+    const RETRY_EXPECTED_CONTENT = 601;
+    const RETRY_EXPECTED_HTTP_CODE = 602;
+
     /**
      * @var array
      */
@@ -30,7 +33,14 @@ class ResultException extends IkResultException
                 self::P_MESSAGE => 'error, curl',
                 self::P_STATUS  => self::STATUS_ERROR
             ),
-
+            self::RETRY_EXPECTED_CONTENT => array(
+                self::P_STATUS  => self::STATUS_RETRY,
+                self::P_MESSAGE => 'retry gateway dispatch class...',
+            ),
+            self::RETRY_EXPECTED_HTTP_CODE => array(
+                self::P_STATUS  => self::STATUS_RETRY,
+                self::P_MESSAGE => 'retry gateway dispatch class...',
+            ),
         );
 
 }
