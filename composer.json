@@ -30,7 +30,7 @@
   ],
   "require": {
     "php": ">=5.5.0",
-    "cronario/cronario": "0.2.*",
+    "cronario/cronario": "0.3.*",
     "cronario/messenger-alphasms": "0.1.9",
     "hipchat/hipchat-php": ">=1.0.0",
     "svyatov/curlwrapper": "~1.3",
