@@ -25,6 +25,26 @@ class mockAlphaSmsClient
 
 }
 
+class mockInfobipClient
+{
+
+    public function __call($method, $args)
+    {
+    }
+
+    public static function __callStatic($method, $args)
+    {
+    }
+
+    public function getResponse()
+    {
+        return [
+            'errors' => null,
+            'id'     => 0,
+        ];
+    }
+
+}
 
 class JobSmsTest extends \PHPUnit_Framework_TestCase
 {
@@ -108,6 +128,49 @@ class JobSmsTest extends \PHPUnit_Framework_TestCase
         $sms->setText('text');
 
         $worker = new \Messenger\Sms\Alpha\Worker();
+
+        $result = $worker($sms);
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+
+    }
+
+
+    public function testDoJobByInfobip()
+    {
+        $sms = $this->createJobSkeleton();
+        $sms->setRecipient('380670000000');
+        $sms->setSender('sender');
+        $sms->setText('text');
+
+        $mockInfobipClient = new mockInfobipClient();
+
+        /** @var \Messenger\Sms\Infobip\Worker $worker */
+        // $worker = new \Messenger\Sms\Infobip\Worker();
+        $worker = $this->getMock('\\Messenger\\Sms\\Infobip\\Worker', ['getTransport']);
+        $worker
+            ->method('getTransport')
+            ->will($this->returnValue($mockInfobipClient));
+
+        $result = $worker($sms);
+        $resultArray = $result->toArray();
+
+        $this->assertInternalType('array', $resultArray);
+        $this->assertArrayHasKey('globalCode', $resultArray);
+        $this->assertArrayHasKey('message', $resultArray);
+    }
+
+    public function testDoJobInfobipWorkerForce()
+    {
+        $sms = $this->createJobSkeleton();
+        $sms->setRecipient('380670000000');
+        $sms->setSender('sender');
+        $sms->setText('text');
+
+        $worker = new \Messenger\Sms\Infobip\Worker();
 
         $result = $worker($sms);
         $resultArray = $result->toArray();
