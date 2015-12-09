@@ -49,6 +49,40 @@ class Worker extends AbstractWorker
         return $this->transport;
     }
 
+    /**
+     * @param AbstractJob|Job $job
+     *
+     * @return array
+     */
+    protected function send(AbstractJob $job)
+    {
+        $result = [
+            'errors'    => [],
+            'vendor_id' => null,
+        ];
+
+        try {
+            $transport = $this->getTransport();
+
+            $smsMessage = new \infobip\models\SMSRequest();
+
+            $smsMessage->senderAddress = $job->getSender();
+            $smsMessage->address = $job->getRecipient();
+            $smsMessage->message = $job->getText();
+
+            $response = $transport->sendSMS($smsMessage);
+
+            $result['vendor_id'] = $response->clientCorrelator;
+            if ($response->exception != null) {
+                $result['errors'][] = $response->exception;
+            }
+
+        } catch (\Exception $ex) {
+            $result['errors'][] = $ex->getMessage();
+        }
+
+        return $result;
+    }
     // endregion *************************************************************
 
     // region VALIDATE ********************************************************
@@ -82,23 +116,16 @@ class Worker extends AbstractWorker
         $resultData = SmsWorker::buildResultDataDefault(__NAMESPACE__);
 
         try {
-            $transport = $this->getTransport();
+            $response = $this->send($job);
 
-            $smsMessage = new \infobip\models\SMSRequest();
-            $smsMessage->senderAddress = $job->getSender();
-            $smsMessage->address = $job->getRecipient();
-            $smsMessage->message = $job->getText();
-
-            $response = $transport->sendSMS($smsMessage);
-            $resultData[SmsWorker::P_RESULT_DATA_SUCCESS] = (count($response['errors']) == 0);
-            $resultData[SmsWorker::P_RESULT_DATA_VENDOR_ID] = $response['id'];
+            $resultData[SmsWorker::P_RESULT_DATA_SUCCESS] = count($response['errors']) == 0;
+            $resultData[SmsWorker::P_RESULT_DATA_VENDOR_ID] = $response['vendor_id'];
             $resultData[SmsWorker::P_RESULT_DATA_ERRORS] = $response['errors'];
 
             $job->addDebug(['vendor_response' => $response]);
 
         } catch (\Exception $ex) {
             $job->addDebug(['exception' => $ex->getMessage()]);
-            print_r($ex->getMessage());
             throw new ResultException(ResultException::ERROR_TRANSPORT);
         }
 
