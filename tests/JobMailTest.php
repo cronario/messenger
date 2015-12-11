@@ -2,15 +2,11 @@
 
 namespace Messenger\Test;
 
+use Cronario\AbstractWorker;
 use \Cronario\Facade;
 use \Cronario\Producer;
 
-class mockZend_Mail_Transport_Smtp
-{
-
-}
-
-class mockZend_Mail
+class mockPHPMailer
 {
 
     public function __call($method, $args)
@@ -21,6 +17,11 @@ class mockZend_Mail
     public static function __callStatic($method, $args)
     {
 
+    }
+
+    public static function send()
+    {
+        return true;
     }
 
     public function createAttachment($arg)
@@ -78,11 +79,7 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         $mail->setAttachment([
             [
                 \Messenger\Mail\Job::P_PARAM_ATTACHMENT__PATH        => '/folder/big-data-file.csv',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__NAME        => 'file',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__TYPE        => 'text/csv',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__DISPOSITION => 'big data file',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ENCODING    => 'UTF-8',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ID          => 'att-id-123',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__NAME        => 'file-super.csv',
             ]
         ]);
 
@@ -97,31 +94,16 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         $this->assertInternalType('array', $mail->getAttachment());
     }
 
-    public function testWorkerGetTransport()
-    {
-        $worker = new \Messenger\Mail\Worker();
-        $transport = $worker->getTransport('xxx', []);
-        $mailObject = $worker->getMail('xxx', 'yyy');
-
-        $this->assertInstanceOf('\\Zend_Mail_Transport_Smtp', $transport);
-        $this->assertInstanceOf('\\Zend_Mail', $mailObject);
-    }
-
 
     public function testDoJob()
     {
-        $mockTransport = new mockZend_Mail_Transport_Smtp('xxx', []);
-        $mockMailObject = new mockZend_Mail('xxx');
+        $mockMailObject = new mockPHPMailer('xxx');
 
         /** @var \Messenger\Mail\Worker $workerMail */
-        $workerMail = $this->getMock('\Messenger\Mail\Worker', ['getTransport', 'getMail']);
-        $workerMail
-            ->method('getTransport')
-            ->will($this->returnValue($mockTransport));
+        $workerMail = $this->getMock('\Messenger\Mail\Worker', ['getMail']);
         $workerMail
             ->method('getMail')
             ->will($this->returnValue($mockMailObject));
-
 
         $mail = $this->createJobSkeleton();
         $mail->setFromName('Mail Boss');
@@ -132,17 +114,12 @@ class JobMailTest extends \PHPUnit_Framework_TestCase
         $mail->setAttachment([
             [
                 \Messenger\Mail\Job::P_PARAM_ATTACHMENT__PATH        => __FILE__,
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__NAME        => 'file',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__TYPE        => 'text/csv',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__DISPOSITION => 'big data file',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ENCODING    => 'UTF-8',
-                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__ID          => 'att-id-123',
+                \Messenger\Mail\Job::P_PARAM_ATTACHMENT__NAME        => 'file.csv',
             ]
         ]);
 
         $result = $workerMail($mail);
         $resultArray = $result->toArray();
-
         $this->assertInternalType('array', $resultArray);
         $this->assertArrayHasKey('globalCode', $resultArray);
         $this->assertArrayHasKey('message', $resultArray);
