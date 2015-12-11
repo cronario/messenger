@@ -11,10 +11,13 @@ class Worker extends AbstractWorker
     protected static $config
         = [
             'client' => [
-                'host'   => '...',
-                'params' => [
-                    '...' => '...',
-                ],
+//                "Mailer" => 'smtp',                               // Set mailer to use SMTP
+//                "Host" => 'smtp1.example.com;smtp2.example.com',  // Specify main and backup SMTP servers
+//                "SMTPAuth" => true,                               // Enable SMTP authentication
+//                "Username" => 'user@example.com',                 // SMTP username
+//                "Password" => 'secret',                           // SMTP password
+//                "SMTPSecure" => 'tls',                            // Enable TLS encryption, `ssl` also accepted
+//                "Port" => 587,                                    // TCP port to connect to
             ]
         ];
 
@@ -52,70 +55,56 @@ class Worker extends AbstractWorker
     // endregion *************************************************************
 
     /**
-     * @param $host
-     * @param $params
-     *
-     * @return \Zend_Mail_Transport_Smtp
-     */
-    public function getTransport($host, $params)
-    {
-        return new \Zend_Mail_Transport_Smtp($host, $params);
-    }
-
-    /**
-     * @return \Zend_Mail
+     * @return \PHPMailer
      */
     public function getMail()
     {
-        return new \Zend_Mail('utf-8');
+        $mail = new \PHPMailer();
+
+        $clientConfig = static::getConfig('client');
+        if(is_array($clientConfig) && count($clientConfig) > 0){
+            foreach($clientConfig as $key => $value){
+                $mail->{$key} = $value;
+            }
+        }
+
+        return $mail;
     }
 
     /**
      * @param Job $job
      *
      * @return array
-     * @throws \Zend_Mail_Exception
      */
     protected function sendMail(Job $job)
     {
-        // prepare Transport
-        $clientConfig = static::getConfig('client');
 
-        $transport = $this->getTransport(
-            $clientConfig['host'],
-            $clientConfig['params']
-        );
+        $mail = $this->getMail();
 
-        // Build mail
-        $Email = $this->getMail();
-        $Email->setSubject($job->getSubject());
-        $Email->setBodyHtml($job->getBody());
-        $Email->setBodyText(strip_tags($job->getBody()));
-        $Email->setFrom($job->getFromMail(), $job->getFromName());
-        $Email->addTo($job->getToMail());
+        $mail->isHTML(true);
+        $mail->setFrom($job->getFromMail(), $job->getFromName());
+        $mail->addAddress($job->getToMail());
+
+        $mail->Subject = $job->getSubject();
+        $mail->Body    = $job->getBody();
+        $mail->AltBody = strip_tags($job->getBody());
 
         $attachments = $job->getAttachment();
-
         if (!empty($attachments) && is_array($attachments) && count($attachments) > 0) {
             foreach ($attachments as $key => $attach) {
-                //$at[$key] = $mail->createAttachment(file_get_contents($attachment[Job::T_EMAIL_P_ATTACHMENT__PATH]));
-                $at[$key] = $Email->createAttachment(base64_decode($attach[Job::P_PARAM_ATTACHMENT__PATH]));
-                $at[$key]->filename = $attach[Job::P_PARAM_ATTACHMENT__NAME];
-                $at[$key]->type = $attach[Job::P_PARAM_ATTACHMENT__TYPE];
-                $at[$key]->disposition = $attach[Job::P_PARAM_ATTACHMENT__DISPOSITION];
-                $at[$key]->encoding = $attach[Job::P_PARAM_ATTACHMENT__ENCODING];
-                $at[$key]->id = $attach[Job::P_PARAM_ATTACHMENT__ID];
+                if(isset($attach[Job::P_PARAM_ATTACHMENT__NAME])){
+                    $mail->addAttachment($attach[Job::P_PARAM_ATTACHMENT__PATH] , $attach[Job::P_PARAM_ATTACHMENT__NAME]);
+                } else {
+                    $mail->addAttachment($attach[Job::P_PARAM_ATTACHMENT__PATH]);
+                }
             }
         }
 
-        // Send mail
-        $success = (bool) $Email->send($transport);
+        $isSend = $mail->send();
 
-        $response = [
-            'success' => $success
+        return [
+            'success' => $isSend
         ];
-
-        return $response;
     }
 
     /**
@@ -129,12 +118,15 @@ class Worker extends AbstractWorker
 
         try {
 
-            // Send message
             $response = $this->sendMail($job);
             $resultData['response'] = $response;
 
         } catch (\Exception $ex) {
             throw new ResultException(ResultException::RETRY_TRANSPORT_ERROR);
+        }
+
+        if(!$resultData['response']['success']){
+            throw new ResultException(ResultException::R_FAILURE, $resultData);
         }
 
         throw new ResultException(ResultException::R_SUCCESS, $resultData);

@@ -16,10 +16,6 @@ class Job extends AbstractJob
     const P_PARAM_ATTACHMENT = 'attachment';
     const P_PARAM_ATTACHMENT__PATH = 'p';
     const P_PARAM_ATTACHMENT__NAME = 'n';
-    const P_PARAM_ATTACHMENT__TYPE = 't';
-    const P_PARAM_ATTACHMENT__DISPOSITION = 'd';
-    const P_PARAM_ATTACHMENT__ENCODING = 'e';
-    const P_PARAM_ATTACHMENT__ID = 'id';
 
     /**
      * @return int|null|string
